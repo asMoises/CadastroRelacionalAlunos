@@ -6,14 +6,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import db.DBConnectionSchool;
 import db.DBSchoolException;
 import model.dao.ProgramDaoInterf;
 import model.entities.Program;
 
 public class ProgramDao implements ProgramDaoInterf {
-	
+
 	Connection conn = null;
-	
+
 	public ProgramDao(Connection conn) {
 		this.conn = conn;
 	}
@@ -26,7 +27,19 @@ public class ProgramDao implements ProgramDaoInterf {
 
 	@Override
 	public void update(Program obj) {
-		// TODO Auto-generated method stub
+		PreparedStatement st = null;
+
+		try {
+			st = conn.prepareStatement("UPDATE program SET WeekDays=? WHERE IdProg=?");
+			st.setString(1, obj.getWeekDays());
+			st.setInt(2, obj.getIdProgram());
+
+			st.executeUpdate();
+		} catch (SQLException e) {
+			throw new DBSchoolException(e.getMessage());
+		} finally {
+			DBConnectionSchool.closeStatement(st);
+		}
 
 	}
 
@@ -45,19 +58,22 @@ public class ProgramDao implements ProgramDaoInterf {
 			st = conn.prepareStatement("SELECT * FROM program WHERE IdProg=?");
 			st.setInt(1, id);
 			rs = st.executeQuery();
-			if(rs.next()) {
+			if (rs.next()) {
 				Program newProg = new Program();
 				newProg.setIdProgram(rs.getInt("IdProg"));
 				newProg.setProgramName(rs.getString("Program"));
 				newProg.setWeekDays(rs.getString("WeekDays"));
-				
+
 				return newProg;
-			}else {
+			} else {
 				throw new DBSchoolException("Id not found!");
 			}
 
 		} catch (SQLException e) {
 			throw new DBSchoolException(e.getMessage());
+		} finally {
+			DBConnectionSchool.closeResultSet(rs);
+			DBConnectionSchool.closeStatement(st);
 		}
 	}
 

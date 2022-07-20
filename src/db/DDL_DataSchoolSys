@@ -1,0 +1,32 @@
+
+
+CREATE TABLE `grade` (
+  `IdGrade` int NOT NULL AUTO_INCREMENT,
+  `Grade` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`IdGrade`)
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+CREATE TABLE `program` (
+  `IdProg` int NOT NULL AUTO_INCREMENT,
+  `Program` varchar(45) NOT NULL,
+  `WeekDays` varchar(45) NOT NULL,
+  PRIMARY KEY (`IdProg`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+CREATE TABLE `studant` (
+  `IdStudant` int NOT NULL AUTO_INCREMENT,
+  `Name` varchar(45) NOT NULL,
+  `BirthDate` datetime NOT NULL,
+  `Cpf` varchar(45) NOT NULL,
+  `Rm` int NOT NULL,
+  `Email` varchar(45) DEFAULT NULL,
+  `EmailEduc` varchar(45) NOT NULL,
+  `StatusProgram` tinyint NOT NULL DEFAULT '0',
+  `IdGrade` int NOT NULL,
+  `IdProg` int NOT NULL,
+  PRIMARY KEY (`IdStudant`),
+  KEY `IdGrade` (`IdGrade`),
+  KEY `IdProg` (`IdProg`),
+  CONSTRAINT `studant_ibfk_1` FOREIGN KEY (`IdGrade`) REFERENCES `grade` (`IdGrade`),
+  CONSTRAINT `studant_ibfk_2` FOREIGN KEY (`IdProg`) REFERENCES `program` (`IdProg`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci

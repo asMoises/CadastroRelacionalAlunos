@@ -4,8 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
+import db.DBConnectionSchool;
 import db.DBSchoolException;
 import model.dao.GradeDaoInterf;
 import model.entities.Grade;
@@ -20,13 +22,47 @@ public class GradeDao implements GradeDaoInterf {
 
 	@Override
 	public void insert(Grade obj) {
-		// TODO Auto-generated method stub
+		PreparedStatement st = null;
+
+		try {
+			st = conn.prepareStatement("INSERT INTO grade (Grade) values (?)", Statement.RETURN_GENERATED_KEYS);
+			st.setString(1, obj.getGradeName());
+			int rowsAffected = st.executeUpdate();
+
+			if (rowsAffected > 0) {
+				ResultSet rs = st.getGeneratedKeys();
+				if (rs.next()) {
+					int id = rs.getInt(1);
+					obj.setIdGrade(id);
+				}
+				DBConnectionSchool.closeResultSet(rs);
+			} else {
+				throw new DBSchoolException("Unexpected error! No rows affected!");
+			}
+
+		} catch (SQLException e) {
+			throw new DBSchoolException(e.getMessage());
+		} finally {
+			DBConnectionSchool.closeStatement(st);
+		}
 
 	}
 
 	@Override
 	public void update(Grade obj) {
+		PreparedStatement st = null;
 
+		try {
+			st = conn.prepareStatement("UPDATE grade SET Grade=? WHERE IdGrade=?");
+			st.setString(1, obj.getGradeName());
+			st.setInt(2, obj.getIdGrade());
+
+			st.executeUpdate();
+		} catch (SQLException e) {
+			throw new DBSchoolException(e.getMessage());
+		} finally {
+			DBConnectionSchool.closeStatement(st);
+		}
 	}
 
 	@Override
