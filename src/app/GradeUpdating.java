@@ -20,6 +20,7 @@ public class GradeUpdating {
 		Grade grade = gradeDao.findById(idGrade);
 		System.out.print("Enter the new grade name: " + grade.getGradeName());
 		String newGradeName = sc.next();
+		sc.nextLine();
 		grade.setGradeName(newGradeName);
 		gradeDao.update(grade);
 		gradeDao.findById(grade.getIdGrade());

@@ -14,9 +14,8 @@ public class GradeInserting {
 
 		System.out.println("\n=== Grade Inserting ===");
 		System.out.print("Enter the grade name: ");
-		String name = sc.next();
-		sc.nextLine();
-
+		String name = sc.nextLine();
+		
 		Grade newGrade = new Grade(null, name);
 		gradeDao.insert(newGrade);
 

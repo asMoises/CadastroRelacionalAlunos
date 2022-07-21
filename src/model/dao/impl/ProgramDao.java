@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import db.DBConnectionSchool;
@@ -21,7 +22,28 @@ public class ProgramDao implements ProgramDaoInterf {
 
 	@Override
 	public void insert(Program obj) {
-		// TODO Auto-generated method stub
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement("INSERT INTO program (Program, WeekDays) values (?,?)", Statement.RETURN_GENERATED_KEYS);
+			st.setString(1, obj.getProgramName());
+			st.setString(2, obj.getWeekDays());
+			int rowsAffected = st.executeUpdate();
+			
+			if(rowsAffected > 0) {
+				ResultSet rs = st.getGeneratedKeys();
+				if (rs.next()) {
+					int id = rs.getInt(1);
+					obj.setIdProgram(id);
+				}
+				DBConnectionSchool.closeResultSet(rs);
+			}else {
+				throw new DBSchoolException("Unexpected error! No rows affected!");
+			}
+		} catch (SQLException e) {
+			throw new DBSchoolException(e.getMessage());
+		} finally {
+			DBConnectionSchool.closeStatement(st);
+		}
 
 	}
 
