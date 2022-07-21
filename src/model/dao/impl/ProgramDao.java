@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import db.DBConnectionSchool;
@@ -24,19 +25,20 @@ public class ProgramDao implements ProgramDaoInterf {
 	public void insert(Program obj) {
 		PreparedStatement st = null;
 		try {
-			st = conn.prepareStatement("INSERT INTO program (Program, WeekDays) values (?,?)", Statement.RETURN_GENERATED_KEYS);
+			st = conn.prepareStatement("INSERT INTO program (Program, WeekDays) values (?,?)",
+					Statement.RETURN_GENERATED_KEYS);
 			st.setString(1, obj.getProgramName());
 			st.setString(2, obj.getWeekDays());
 			int rowsAffected = st.executeUpdate();
-			
-			if(rowsAffected > 0) {
+
+			if (rowsAffected > 0) {
 				ResultSet rs = st.getGeneratedKeys();
 				if (rs.next()) {
 					int id = rs.getInt(1);
 					obj.setIdProgram(id);
 				}
 				DBConnectionSchool.closeResultSet(rs);
-			}else {
+			} else {
 				throw new DBSchoolException("Unexpected error! No rows affected!");
 			}
 		} catch (SQLException e) {
@@ -101,8 +103,25 @@ public class ProgramDao implements ProgramDaoInterf {
 
 	@Override
 	public List<Program> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+
+		try {
+			List<Program> list = new ArrayList<>();
+
+			st = conn.prepareStatement("select * from program order by IdProg");
+			rs = st.executeQuery();
+
+			while (rs.next()) {
+				list.add(new Program(rs.getInt("IdProg"), rs.getString("Program"), rs.getString("WeekDays")));
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DBSchoolException(e.getMessage());
+		} finally {
+			DBConnectionSchool.closeResultSet(rs);
+			DBConnectionSchool.closeStatement(st);
+		}
 	}
 
 }

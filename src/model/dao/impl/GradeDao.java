@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import db.DBConnectionSchool;
@@ -99,8 +100,23 @@ public class GradeDao implements GradeDaoInterf {
 
 	@Override
 	public List<Grade> findAll() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		PreparedStatement st = null;
+		ResultSet rs = null;
 
+		try {
+			List<Grade> list = new ArrayList<>();
+			st = conn.prepareStatement("Select * from grade order by IdGrade");
+			rs = st.executeQuery();
+
+			while (rs.next()) {
+				list.add(new Grade(rs.getInt("IdGrade"), rs.getString("Grade")));
+			}
+			return list; // must to be treated in case off any data!!!!
+		} catch (SQLException e) {
+			throw new DBSchoolException(e.getMessage());
+		} finally {
+			DBConnectionSchool.closeResultSet(rs);
+			DBConnectionSchool.closeStatement(st);
+		}
+	}
 }
