@@ -68,8 +68,24 @@ public class GradeDao implements GradeDaoInterf {
 
 	@Override
 	public void deleteById(Integer id) {
-		// TODO Auto-generated method stub
+		PreparedStatement st = null;
 
+		try {
+			st = conn.prepareStatement("delete from grade where IdGrade=?");
+			st.setInt(1, id);
+			int rows = st.executeUpdate();
+
+			if (rows == 0) {
+				throw new DBSchoolException("Id not found! No record deleted!");
+			} else {
+				System.out.println("Delete Completed!");
+			}
+
+		} catch (SQLException e) {
+			throw new DBSchoolException(e.getMessage());
+		} finally {
+			DBConnectionSchool.closeStatement(st);
+		}
 	}
 
 	@Override
